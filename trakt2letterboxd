@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use feature 'say';
+
+use Text::CSV;
+use Data::Printer;
+
+my $csv = Text::CSV->new({
+  binary    => 1,
+  auto_diag => 1,
+});
+
+$csv->column_names($csv->getline(*ARGV));
+
+say '"tmdbID","imdbID","Title","Year","WatchedDate"';
+
+my $i = 0;
+while (my $row = $csv->getline_hr(*ARGV)) {
+
+  next if $row->{type} ne 'movie';
+
+  say join ',', map { qq["$_"] }
+   $row->{tmdb_id},
+   $row->{imdb_id},
+   $row->{title},
+   $row->{year},
+   $row->{watched_at};
+}
